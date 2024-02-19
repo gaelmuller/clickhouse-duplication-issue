@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "clickhouse-duplication-issue"
+version = "0.1.0"
+description = ""
+authors = ["Gael Muller <muller.gael@gmail.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+clickhouse-driver = "^0.2.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

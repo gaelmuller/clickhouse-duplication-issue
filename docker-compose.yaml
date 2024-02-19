@@ -1,0 +1,89 @@
+version: "3.8"
+
+networks:
+  clickhouse:
+  zookeeper:
+
+volumes:
+  clickhouse1:
+  clickhouse2:
+  clickhouse101:
+  clickhouse102:
+
+services:
+
+  clickhouse1:
+    image: clickhouse/clickhouse-server:latest
+    hostname: clickhouse1
+    ports:
+      - 127.0.0.1:8123:8123
+      - 127.0.0.1:9000:9000
+    environment:
+      CLICKHOUSE_PASSWORD: plop
+      INTERSERVER_PASSWORD: superprotected_password
+      SHARD: 1
+      REPLICA: clickhouse1
+    volumes:
+      - clickhouse1:/var/lib/clickhouse
+      - ./conf/users/:/etc/clickhouse-server/users.d/
+      - ./conf/config/:/etc/clickhouse-server/config.d/
+    networks:
+      - clickhouse
+      - zookeeper
+  clickhouse2:
+    image: clickhouse/clickhouse-server:latest
+    hostname: clickhouse2
+    environment:
+      CLICKHOUSE_PASSWORD: plop
+      INTERSERVER_PASSWORD: superprotected_password
+      SHARD: 2
+      REPLICA: clickhouse2
+    volumes:
+      - clickhouse2:/var/lib/clickhouse
+      - ./conf/users/:/etc/clickhouse-server/users.d/
+      - ./conf/config/:/etc/clickhouse-server/config.d/
+    networks:
+      - clickhouse
+      - zookeeper
+
+  # replica servers are named 10x
+  clickhouse101:
+    image: clickhouse/clickhouse-server:latest
+    hostname: clickhouse101
+    environment:
+      CLICKHOUSE_PASSWORD: plop
+      INTERSERVER_PASSWORD: superprotected_password
+      SHARD: 1
+      REPLICA: clickhouse101
+    volumes:
+      - clickhouse101:/var/lib/clickhouse
+      - ./conf/users/:/etc/clickhouse-server/users.d/
+      - ./conf/config/:/etc/clickhouse-server/config.d/
+    networks:
+      - clickhouse
+      - zookeeper
+  clickhouse102:
+    image: clickhouse/clickhouse-server:latest
+    hostname: clickhouse102
+    environment:
+      CLICKHOUSE_PASSWORD: plop
+      INTERSERVER_PASSWORD: superprotected_password
+      SHARD: 2
+      REPLICA: clickhouse102
+    volumes:
+      - clickhouse102:/var/lib/clickhouse
+      - ./conf/users/:/etc/clickhouse-server/users.d/
+      - ./conf/config/:/etc/clickhouse-server/config.d/
+    networks:
+      - clickhouse
+      - zookeeper
+
+  zookeeper:
+    image: zookeeper:3.5
+    restart: always
+    hostname: zookeeper
+    networks:
+      - zookeeper
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
